@@ -161,16 +161,24 @@ public class Ldap2LdapHookSyncTest extends CommonLdapSyncTest {
 		List<String> hookResults = new ArrayList<String>();
 		try {
 			File hookFile = new File("hook-ldif-" + operation + ".log");
-			Scanner hookReader = new Scanner(hookFile);
-
-			while (hookReader.hasNextLine()) {
-				String data = hookReader.nextLine();
-				hookResults.add(data);
+			Thread.sleep(1000L);
+			
+			if (!hookFile.exists()) {
+				System.out.println("!!!!!!!!!!!!!!!!!!! File " + hookFile.getAbsolutePath() + " does not exist");
 			}
-			hookReader.close();
+
+			try (Scanner hookReader = new Scanner(hookFile.getAbsoluteFile())) {
+				while (hookReader.hasNextLine()) {
+					String data = hookReader.nextLine();
+					hookResults.add(data);
+				}
+			} catch (FileNotFoundException fnfe) {
+				fail("Cannot find the  hook file" + "hook-ldif-" + operation + ".log " + fnfe.getMessage());
+			} 
+
 			hookFile.delete(); // remove hook log
 		} catch (Exception e) {
-			fail("Error while reading hook-ldif-" + operation + ".log");
+			ffail("Error while reading hook-ldif-" + operation + ".log " + e.getMessage());
 		}
 		assertEquals(hookResults.get(0), "cn=CN0001-hook,ou=ldap2ldap2TestTaskDst,ou=Test Data,dc=lsc-project,dc=org");
 		assertEquals(hookResults.get(1), operation);
@@ -193,16 +201,25 @@ public class Ldap2LdapHookSyncTest extends CommonLdapSyncTest {
 		List<String> hookResults = new ArrayList<String>();
 		try {
 			File hookFile = new File("hook-json-" + operation + ".log");
-			Scanner hookReader = new Scanner(hookFile);
 
-			while (hookReader.hasNextLine()) {
-				String data = hookReader.nextLine();
-				hookResults.add(data);
+			Thread.sleep( 1000L );
+
+			if (!hookFile.exists()) {
+				System.out.println( "!!!!!!!!!!!!!!!!!!! File " + hookFile.getAbsolutePath() + " does not exist" );
 			}
-			hookReader.close();
+			
+			try (Scanner hookReader = new Scanner(hookFile.getAbsoluteFile())) {
+				while (hookReader.hasNextLine()) {
+					String data = hookReader.nextLine();
+					hookResults.add(data);
+				}
+			} catch (FileNotFoundException fnfe) {
+				fail("Cannot find the  hook file" + "hook-json-" + operation + ".log " + fnfe.getMessage());
+			}
+			
 			hookFile.delete(); // remove hook log
 		} catch (Exception e) {
-			fail("Error while reading hook-json-" + operation + ".log");
+			fail("Error while reading hook-json-" + operation + ".log " + e.getMessage());
 		}
 		assertEquals(hookResults.get(0), "cn=CN0001-hook,ou=ldap2ldap2TestTaskDst,ou=Test Data,dc=lsc-project,dc=org");
 		assertEquals(hookResults.get(1), operation);
