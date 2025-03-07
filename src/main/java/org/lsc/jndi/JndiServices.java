@@ -754,6 +754,8 @@ public final class JndiServices {
 	private List<String> doGetDnList(final String base, final String filter, final int scope) throws NamingException {
 		NamingEnumeration<SearchResult> namingEnumeration = null;
 		List<String> list = new ArrayList<String>();
+		
+		// Create a new context for the search operation
 		LdapContext searchContext = (LdapContext)ctx.lookup("");
 
 		try {
@@ -1172,6 +1174,8 @@ public final class JndiServices {
 		
 		try {
 			byte[] pagedResultsResponse;
+			
+			// Create a new context for the search operation
 			LdapContext searchContext = (LdapContext)ctx.lookup("");
 			
 			try {
